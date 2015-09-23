@@ -1,0 +1,4 @@
+com\trader\TestController.class
+com\trader\application\configuration\MvcAppConfig.class
+com\trader\application\ApplicationInitializer.class
+com\trader\application\DispatcherConfig.class
