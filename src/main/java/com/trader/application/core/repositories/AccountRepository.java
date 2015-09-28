@@ -13,7 +13,7 @@ public interface AccountRepository {
 
 	public Account createAccount(Account account);
 
-	public Account findAccountByUsername(String username);
+	public Account findAccountByEmail(String email);
 
 	public List<Account> findAll();
 }

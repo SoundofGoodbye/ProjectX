@@ -8,7 +8,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,7 +30,7 @@ import com.trader.application.rest.exceptions.AccountExistsException;
 
 public class AccountControllerTest {
 
-	private static final String REQUEST_JSON = "{\"username\":\"test\",\"password\":\"test\",\"email\":\"test@test.com\"}";
+	private static final String REQUEST_JSON = "{\"firstName\":\"test\",\"password\":\"test\",\"email\":\"test@test.com\"}";
 	@InjectMocks
 	private AccountController controller;
 
@@ -60,23 +60,23 @@ public class AccountControllerTest {
 		Account account = new Account();
 
 		account.setId(1L);
-		account.setUsername("Test user");
+		account.setFirstName("First Name");
 		account.setEmail("Test_user@test.com");
 		account.setPassword("test");
 
 		when(accountService.find(1L)).thenReturn(account);
 
-		mockMvc.perform(get("/rest/accounts/1")).andDo(print())
-				.andExpect(jsonPath("$.username", is(account.getUsername())))
+		mockMvc.perform(get(ControllerMappingConstants.ACCOUNT_BASE_URL + "/1")).andDo(print())
+				.andExpect(jsonPath("$.firstName", is(account.getFirstName())))
 				.andExpect(jsonPath("$.email", is(account.getEmail())))
-				.andExpect(jsonPath("$.links[*].href", hasItem(endsWith("/accounts/1")))).andExpect(status().isOk());
+				.andExpect(jsonPath("$.links[*].href", hasItem(endsWith(ControllerMappingConstants.ACCOUNT_BASE_URL + "/1")))).andExpect(status().isOk());
 	}
 
 	@Test
 	public void getNonExistingAccount() throws Exception {
 		when(accountService.find(1L)).thenReturn(null);
 
-		mockMvc.perform(get("/rest/accounts/1")).andExpect(status().isNotFound());
+		mockMvc.perform(get(ControllerMappingConstants.ACCOUNT_BASE_URL + "/1")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -84,14 +84,16 @@ public class AccountControllerTest {
 		Account createdAccount = new Account();
 		createdAccount.setId(1L);
 		createdAccount.setPassword("test");
-		createdAccount.setUsername("test");
+		createdAccount.setFirstName("First Name");
+		createdAccount.setMiddleName("Middle Name");
+		createdAccount.setLastName("Last Name");
 		createdAccount.setEmail("test@test.com");
 
 		when(accountService.createAccount(any(Account.class))).thenReturn(createdAccount);
 
-		mockMvc.perform(post("/rest/accounts").content(REQUEST_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(header().string("Location", org.hamcrest.Matchers.endsWith("/rest/accounts/1")))
-				.andExpect(jsonPath("$.username", is(createdAccount.getUsername()))).andExpect(status().isCreated());
+		mockMvc.perform(put(ControllerMappingConstants.ACCOUNT_BASE_URL + "/register").content(REQUEST_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(header().string("Location", org.hamcrest.Matchers.endsWith(ControllerMappingConstants.ACCOUNT_BASE_URL + "/1")))
+				.andExpect(jsonPath("$.firstName", is(createdAccount.getFirstName()))).andExpect(status().isCreated());
 
 		verify(accountService).createAccount(accountCaptor.capture());
 
@@ -103,7 +105,7 @@ public class AccountControllerTest {
 	public void createAccountExistingUsername() throws Exception {
 		when(accountService.createAccount(any(Account.class))).thenThrow(new AccountExistsException());
 
-		mockMvc.perform(post("/rest/accounts").content(REQUEST_JSON).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(ControllerMappingConstants.ACCOUNT_BASE_URL + "/register").content(REQUEST_JSON).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isConflict());
 
 		verify(accountService).createAccount(accountCaptor.capture());

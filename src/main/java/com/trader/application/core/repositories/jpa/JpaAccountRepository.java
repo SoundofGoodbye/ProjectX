@@ -33,7 +33,10 @@ public class JpaAccountRepository implements AccountRepository {
 	@Override
 	public Account updateAccount(Long id, Account accountEntry) {
 		Account account = entityManager.find(Account.class, id);
-		account.setUsername(accountEntry.getUsername());
+		account.setFirstName(accountEntry.getFirstName());
+		account.setMiddleName(accountEntry.getMiddleName());
+		account.setLastName(accountEntry.getLastName());
+		account.setSchool(accountEntry.getSchool());
 		account.setEmail(accountEntry.getEmail());
 		account.setPassword(accountEntry.getPassword());
 
@@ -54,8 +57,8 @@ public class JpaAccountRepository implements AccountRepository {
 	}
 
 	@Override
-	public Account findAccountByUsername(String username) {
-		Query query = entityManager.createQuery("SELECT a FROM Account a WHERE a.username=?1");
+	public Account findAccountByEmail(String username) {
+		Query query = entityManager.createQuery("SELECT a FROM Account a WHERE a.email=?1");
 		query.setParameter(1, username);
 
 		@SuppressWarnings("unchecked")

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,11 +29,12 @@ import com.trader.application.rest.resources.AccountResource;
 import com.trader.application.rest.resources.asm.AccountListResourceAsm;
 import com.trader.application.rest.resources.asm.AccountResourceAsm;
 
+@CrossOrigin(origins = "http://localhost")
 @RestController
 @RequestMapping(ControllerMappingConstants.ACCOUNT_BASE_URL)
 public class AccountController {
 
-	//TODO: Make dynamic URI based on user id/name
+	// TODO: Make dynamic URI based on user id/name
 	private static final String IMAGE_UPLOAD_DESTINATON = "C:/Users/CHUCHI/Desktop/db_deltas/";
 	private AccountService accountService;
 
@@ -45,28 +47,16 @@ public class AccountController {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<AccountListResource> getAccounts() {
-		AccountListWrapper allAccounts = accountService.findAll();
-
-		AccountListResource res = new AccountListResourceAsm().toResource(allAccounts);
-		return new ResponseEntity<AccountListResource>(res, HttpStatus.OK);
-	}
-
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	public ResponseEntity<AccountResource> createAccount(@RequestBody AccountResource sentAccount) {
-		try {
-			Account createdAccount = accountService.createAccount(sentAccount.toAccount());
-			AccountResource res = new AccountResourceAsm().toResource(createdAccount);
-			HttpHeaders headers = new HttpHeaders();
-			headers.setLocation(URI.create(res.getLink("self").getHref()));
-			return new ResponseEntity<AccountResource>(res, headers, HttpStatus.CREATED);
-		} catch (AccountExistsException exception) {
-			throw new ConflictException(exception);
-		}
-	}
-
+	/**
+	 * Answers to GET on /user/{ID} </br>
+	 * Returns a {@link ResponseEntity} that wraps an {@link AccountResource}
+	 * and {@link HttpStatus#OK} for the specified ID. If there is no matching
+	 * entity for the specified ID, returns {@link HttpStatus#NOT_FOUND}.
+	 * 
+	 * @param accountId
+	 *            - ID of the account to return
+	 * @return - {@link AccountResource} and {@link HttpStatus}
+	 */
 	@RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
 	public ResponseEntity<AccountResource> getAccount(@PathVariable Long accountId) {
 		Account entity = accountService.find(accountId);
@@ -75,6 +65,38 @@ public class AccountController {
 			return new ResponseEntity<AccountResource>(accountResource, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<AccountResource>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Answers to GET on /users. <br>
+	 * 
+	 * @return - all accounts currently in the database with an
+	 *         {@link HttpStatus#OK}.
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<AccountListResource> getAccounts() {
+		AccountListWrapper allAccounts = accountService.findAll();
+
+		AccountListResource res = new AccountListResourceAsm().toResource(allAccounts);
+		return new ResponseEntity<AccountListResource>(res, HttpStatus.OK);
+	}
+
+	/**
+	 * 
+	 * @param sentAccount
+	 * @return
+	 */
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<AccountResource> createAccount(@RequestBody AccountResource sentAccount) {
+		try {
+			Account createdAccount = accountService.createAccount(sentAccount.toAccount());
+			AccountResource res = new AccountResourceAsm().toResource(createdAccount);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setLocation(URI.create(res.getLink("self").getHref()));
+			return new ResponseEntity<AccountResource>(res, headers, HttpStatus.CREATED);
+		} catch (AccountExistsException exception) {
+			throw new ConflictException(exception);
 		}
 	}
 

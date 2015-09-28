@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Account createAccount(Account account) {
-		Account accountByUsername = accountRepo.findAccountByUsername(account.getUsername());
+		Account accountByUsername = accountRepo.findAccountByEmail(account.getEmail());
 		if (accountByUsername != null) {
 			throw new AccountExistsException();
 		}

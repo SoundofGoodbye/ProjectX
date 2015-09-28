@@ -17,7 +17,10 @@ public class AccountResourceAsm extends ResourceAssemblerSupport<Account, Accoun
 	@Override
 	public AccountResource toResource(Account account) {
 		AccountResource res = new AccountResource();
-		res.setUsername(account.getUsername());
+		res.setFirstName(account.getFirstName());
+		res.setMiddleName(account.getMiddleName());
+		res.setLastName(account.getLastName());
+		res.setSchool(account.getSchool());
 		res.setEmail(account.getEmail());
 		res.setPassword(account.getPassword());
 

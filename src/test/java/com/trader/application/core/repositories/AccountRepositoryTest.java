@@ -27,7 +27,9 @@ public class AccountRepositoryTest {
 	@Rollback(false)
 	public void setUp() {
 		account = new Account();
-		account.setUsername("username");
+		account.setFirstName("First name");
+		account.setMiddleName("Middle name");
+		account.setLastName("Last name");
 		account.setPassword("password");
 		account.setEmail("test@test.com");
 

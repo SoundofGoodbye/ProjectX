@@ -8,18 +8,48 @@ import com.trader.application.core.models.entities.Account;
 
 public class AccountResource extends ResourceSupport {
 
-	private String username;
+	private String firstName;
 
+	private String middleName;
+
+	private String lastName;
+	
 	private String email;
 
 	private String password;
-
-	public String getUsername() {
-		return username;
+	
+	private String school;
+	
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getSchool() {
+		return school;
+	}
+
+	public void setSchool(String school) {
+		this.school = school;
 	}
 
 	public String getEmail() {
@@ -44,7 +74,10 @@ public class AccountResource extends ResourceSupport {
 
 	public Account toAccount() {
 		Account account = new Account();
-		account.setUsername(username);
+		account.setFirstName(firstName);
+		account.setMiddleName(middleName);
+		account.setLastName(lastName);
+		account.setSchool(school);
 		account.setEmail(email);
 		account.setPassword(password);
 
